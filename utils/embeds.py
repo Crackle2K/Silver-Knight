@@ -14,28 +14,10 @@ def create_embed(
     author_icon: str = None,
     timestamp: bool = True
 ) -> discord.Embed:
-    """
-    Create a Discord embed with common styling
-    
-    Args:
-        title: Embed title
-        description: Embed description
-        color: Embed color (hex)
-        footer: Footer text
-        footer_icon: Footer icon URL
-        thumbnail: Thumbnail image URL
-        image: Main image URL
-        author_name: Author name
-        author_icon: Author icon URL
-        timestamp: Whether to add timestamp (default: True)
-    
-    Returns:
-        discord.Embed: Configured embed object
-    """
     embed = discord.Embed(
         title=title,
         description=description,
-        color=color or Config.COLOR_PRIMARY,
+        color=color or Config.COLOR_DEFAULT,
         timestamp=datetime.utcnow() if timestamp else None
     )
     
@@ -54,8 +36,7 @@ def create_embed(
     return embed
 
 
-def create_success_embed(description: str, title: str = "✅ Success") -> discord.Embed:
-    """Create a success embed"""
+def create_success_embed(description: str, title: str = "Success") -> discord.Embed:
     return create_embed(
         title=title,
         description=description,
@@ -63,8 +44,7 @@ def create_success_embed(description: str, title: str = "✅ Success") -> discor
     )
 
 
-def create_error_embed(description: str, title: str = "❌ Error") -> discord.Embed:
-    """Create an error embed"""
+def create_error_embed(description: str, title: str = "Error") -> discord.Embed:
     return create_embed(
         title=title,
         description=description,
@@ -72,8 +52,7 @@ def create_error_embed(description: str, title: str = "❌ Error") -> discord.Em
     )
 
 
-def create_warning_embed(description: str, title: str = "⚠️ Warning") -> discord.Embed:
-    """Create a warning embed"""
+def create_warning_embed(description: str, title: str = "Warning") -> discord.Embed:
     return create_embed(
         title=title,
         description=description,
@@ -81,10 +60,9 @@ def create_warning_embed(description: str, title: str = "⚠️ Warning") -> dis
     )
 
 
-def create_info_embed(description: str, title: str = "ℹ️ Info") -> discord.Embed:
-    """Create an info embed"""
+def create_info_embed(description: str, title: str = "Info") -> discord.Embed:
     return create_embed(
         title=title,
         description=description,
-        color=Config.COLOR_PRIMARY
+        color=Config.COLOR_DEFAULT
     )

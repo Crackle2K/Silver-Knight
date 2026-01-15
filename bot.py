@@ -5,15 +5,12 @@ import os
 from dotenv import load_dotenv
 from config import Config
 
-# Load environment variables
 load_dotenv()
 
 class DiscordBot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
         intents.message_content = True
-        # Only enable members intent if you need it (requires privileged intent)
-        # intents.members = True
         
         super().__init__(
             command_prefix=Config.PREFIX,
@@ -22,7 +19,6 @@ class DiscordBot(commands.Bot):
         )
     
     async def setup_hook(self):
-        """Load all cogs when the bot starts"""
         print("Loading cogs...")
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py') and not filename.startswith('__'):
@@ -32,26 +28,22 @@ class DiscordBot(commands.Bot):
                 except Exception as e:
                     print(f'✗ Failed to load cog {filename[:-3]}: {e}')
         
-        # Sync slash commands with Discord
         print("Syncing commands...")
         await self.tree.sync()
         print("Commands synced!")
     
     async def on_ready(self):
-        """Called when the bot is ready"""
         print(f'\n{self.user} is now online!')
         print(f'Bot ID: {self.user.id}')
         print(f'Discord.py version: {discord.__version__}')
         print('-' * 40)
         
-        # Set bot status
         await self.change_presence(
             activity=discord.Game(name=Config.STATUS),
             status=discord.Status.online
         )
 
 async def main():
-    # Check if token is configured
     if not Config.TOKEN:
         print("ERROR: DISCORD_TOKEN not found in .env file!")
         return
