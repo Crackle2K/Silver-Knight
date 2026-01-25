@@ -159,6 +159,15 @@ class Moderation(commands.Cog):
             await interaction.response.send_message("Done", ephemeral=True, delete_after=0.1)
         except Exception:
             await interaction.response.send_message("Failed", ephemeral=True, delete_after=0.1)
+    
+    @app_commands.command(name="setnickname", description="Change your or another member's nickname")
+    @app_commands.describe(member="The member to change nickname for", nickname="The new nickname (leave empty to reset)")
+    async def setnickname(self, interaction: discord.Interaction, member: discord.Member, nickname: str = None):
+        try:
+            await member.edit(nick=nickname)
+            await interaction.response.send_message("Done", ephemeral=True, delete_after=0.1)
+        except Exception:
+            await interaction.response.send_message("Failed", ephemeral=True, delete_after=0.1)
 
 async def setup(bot):
     await bot.add_cog(Moderation(bot))
