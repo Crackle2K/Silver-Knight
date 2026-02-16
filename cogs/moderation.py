@@ -1,6 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+from datetime import timedelta
 from config import Config
 from utils.embeds import create_embed
 
@@ -20,36 +21,16 @@ class Moderation(commands.Cog):
     
     @app_commands.command(name="ban", description="Ban a member from the server")
     @app_commands.describe(member="The member to ban", reason="Reason for banning")
-    @app_commands.default_permissions(ban_members=True)
     async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str = "No reason provided"):
         if member.top_role >= interaction.user.top_role:
-            embed = create_embed(
-                title="Error",
-                description="You cannot ban this member!",
-                color=Config.COLOR_DEFAULT
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.response.send_message("Failed", ephemeral=True, delete_after=0.1)
             return
         
         try:
             await member.ban(reason=reason)
-            
-            embed = create_embed(
-                title="Member Banned",
-                description=f"{member.mention} has been banned from the server.",
-                color=Config.COLOR_DEFAULT
-            )
-            embed.add_field(name="Reason", value=reason, inline=False)
-            embed.add_field(name="Moderator", value=interaction.user.mention, inline=True)
-            
-            await interaction.response.send_message(embed=embed)
-        except Exception as e:
-            embed = create_embed(
-                title="Error",
-                description=f"Failed to ban member: {str(e)}",
-                color=Config.COLOR_DEFAULT
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.response.send_message("Done", ephemeral=True, delete_after=0.1)
+        except Exception:
+            await interaction.response.send_message("Failed", ephemeral=True, delete_after=0.1)
     
     @app_commands.command(name="unban", description="Unban a user from the server")
     @app_commands.describe(user_id="The ID of the user to unban", reason="Reason for unbanning")
@@ -57,39 +38,10 @@ class Moderation(commands.Cog):
         try:
             user_id_int = int(user_id)
             user = await self.bot.fetch_user(user_id_int)
-            
             await interaction.guild.unban(user, reason=reason)
-            
-            embed = create_embed(
-                title="User Unbanned",
-                description=f"{user.mention} (`{user.name}`) has been unbanned from the server.",
-                color=Config.COLOR_SUCCESS
-            )
-            embed.add_field(name="Reason", value=reason, inline=False)
-            embed.add_field(name="Unbanned by", value=interaction.user.mention, inline=True)
-            
-            await interaction.response.send_message(embed=embed)
-        except ValueError:
-            embed = create_embed(
-                title="Error",
-                description="Invalid user ID provided! Please provide a valid numeric user ID.",
-                color=Config.COLOR_DEFAULT
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-        except discord.NotFound:
-            embed = create_embed(
-                title="Error",
-                description="User not found or not banned!",
-                color=Config.COLOR_DEFAULT
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-        except Exception as e:
-            embed = create_embed(
-                title="Error",
-                description=f"Failed to unban user: {str(e)}",
-                color=Config.COLOR_DEFAULT
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.response.send_message("Done", ephemeral=True, delete_after=0.1)
+        except Exception:
+            await interaction.response.send_message("Failed", ephemeral=True, delete_after=0.1)
     
     @app_commands.command(name="clear", description="Clear messages in a channel")
     @app_commands.describe(amount="Number of messages to clear (1-100)")
@@ -142,6 +94,15 @@ class Moderation(commands.Cog):
         else:
             await interaction.response.send_message("Channel not found.", ephemeral=True)
     
+    @app_commands.command(name="timeout", description="Timeout a member")
+    @app_commands.describe(member="The member to timeout", duration="Duration in minutes", reason="Reason for timeout")
+    async def timeout(self, interaction: discord.Interaction, member: discord.Member, duration: int, reason: str = "No reason provided"):
+        try:
+            await member.timeout(timedelta(minutes=duration), reason=reason)
+            await interaction.response.send_message("Done", ephemeral=True, delete_after=0.1)
+        except Exception:
+            await interaction.response.send_message("Failed", ephemeral=True, delete_after=0.1)
+    
     @app_commands.command(name="untimeout", description="Remove timeout from a member")
     @app_commands.describe(member="The member to remove timeout from")
     async def untimeout(self, interaction: discord.Interaction, member: discord.Member):
@@ -156,6 +117,15 @@ class Moderation(commands.Cog):
     async def giveviewrole(self, interaction: discord.Interaction, member: discord.Member, role: discord.Role):
         try:
             await member.add_roles(role)
+            await interaction.response.send_message("Done", ephemeral=True, delete_after=0.1)
+        except Exception:
+            await interaction.response.send_message("Failed", ephemeral=True, delete_after=0.1)
+    
+    @app_commands.command(name="removerole", description="Remove a role from a member")
+    @app_commands.describe(member="The member to remove the role from", role="The role to remove")
+    async def removerole(self, interaction: discord.Interaction, member: discord.Member, role: discord.Role):
+        try:
+            await member.remove_roles(role)
             await interaction.response.send_message("Done", ephemeral=True, delete_after=0.1)
         except Exception:
             await interaction.response.send_message("Failed", ephemeral=True, delete_after=0.1)
