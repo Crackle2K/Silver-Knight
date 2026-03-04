@@ -1,4 +1,4 @@
-# Silver-Knight Discord Bot
+# Tropic
 
 A modular Discord bot built with discord.py featuring slash commands, embeds, and a clean cog-based structure.
 
@@ -61,7 +61,7 @@ python bot.py
 ## Project Structure
 
 ```
-Silver-Knight/
+Tropic/
 ├── bot.py              # Main bot file (entry point)
 ├── config.py           # Configuration settings
 ├── .env                # Environment variables (create from .env.example)
